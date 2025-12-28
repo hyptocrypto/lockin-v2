@@ -6,23 +6,31 @@
 /_____/\____/\___/_/|_/___/_/ /_/ 
 ```
 
-# LockIn
-
 A lightweight, encrypted credentials manager for the terminal.
 
 ## Install
 
 ```bash
-go install lockin@latest
-```
-
-Or build from source:
-
-```bash
 git clone https://github.com/yourusername/lockin.git
 cd lockin
-go build -o lockin .
+chmod +x install.sh && ./install.sh
 ```
+
+## SMB Sync
+
+Use your vault across multiple devices without ever sending data over the public internet. Configure a local network share in `~/.config/lockin/config.yaml`:
+
+```yaml
+smb:
+  enabled: true
+  host: "192.168.1.100"
+  port: "445"
+  share: "backups"
+  user: "username"
+  password: "password"
+```
+
+Your encrypted vault syncs automatically after each change — all traffic stays on your local network.
 
 ## Usage
 
@@ -41,22 +49,6 @@ On first run, you'll create a master password. Use the keyboard to navigate:
 | `/` | Search |
 | `c` | Copy password |
 | `q` | Quit |
-
-## SMB Sync
-
-Use your vault across multiple devices without ever sending data over the public internet. Configure a local network share in `~/.config/lockin/config.yaml`:
-
-```yaml
-smb:
-  enabled: true
-  host: "192.168.1.100"
-  port: "445"
-  share: "backups"
-  user: "username"
-  password: "password"
-```
-
-Your encrypted vault syncs automatically after each change — all traffic stays on your local network.
 
 ## License
 
