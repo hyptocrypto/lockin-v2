@@ -84,7 +84,7 @@ func NewFileVault() (*FileVault, error) {
 	}
 
 	v := &FileVault{db: db}
-	v.initSMB()
+	v.initSMB(!v.Exists())
 	return v, nil
 }
 

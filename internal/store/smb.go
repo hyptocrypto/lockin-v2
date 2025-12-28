@@ -117,8 +117,79 @@ func (s *smbConnection) syncToSMB() error {
 	return nil
 }
 
+// syncFromSMBCheck copies the remote database to local if remote is newer or local is new
+func (s *smbConnection) syncFromSMBCheck(newDB bool) {
+	if s == nil || s.share == nil {
+		LogDebug("syncFromSMBCheck: no SMB connection, skipping")
+		return
+	}
+
+	// Check if remote file exists
+	remoteFile, err := s.share.Open(DBFileName)
+	if err != nil {
+		LogDebug("syncFromSMBCheck: remote file doesn't exist, skipping")
+		return
+	}
+	defer remoteFile.Close()
+
+	// Get stats for remote file
+	remoteStat, err := remoteFile.Stat()
+	if err != nil {
+		LogError("Failed to get stats for remote file: %v", err)
+		return
+	}
+
+	// If this is a new local DB, sync from remote
+	if newDB {
+		LogInfo("New local DB detected, syncing from SMB")
+		if err := s.copyRemoteToLocal(remoteFile); err != nil {
+			LogError("Failed to sync from SMB: %v", err)
+		}
+		return
+	}
+
+	// Get local file stats
+	localStat, err := os.Stat(GetDBPath())
+	if err != nil {
+		LogError("Failed to get stats for local file: %v", err)
+		return
+	}
+
+	// Sync if remote is newer
+	if remoteStat.ModTime().After(localStat.ModTime()) {
+		LogInfo("Remote DB is newer, syncing from SMB")
+		if err := s.copyRemoteToLocal(remoteFile); err != nil {
+			LogError("Failed to sync from SMB: %v", err)
+		}
+	} else {
+		LogDebug("Local DB is up to date")
+	}
+}
+
+// copyRemoteToLocal copies the remote file to the local database path
+func (s *smbConnection) copyRemoteToLocal(remoteFile *smb2.File) error {
+	localFile, err := os.Create(GetDBPath())
+	if err != nil {
+		return fmt.Errorf("failed to create local db: %w", err)
+	}
+	defer localFile.Close()
+
+	// Seek remote file to beginning in case it was already read
+	if _, err := remoteFile.Seek(0, 0); err != nil {
+		return fmt.Errorf("failed to seek remote file: %w", err)
+	}
+
+	bytesWritten, err := io.Copy(localFile, remoteFile)
+	if err != nil {
+		return fmt.Errorf("failed to copy from remote: %w", err)
+	}
+
+	LogInfo("SMB sync from remote complete: %d bytes written", bytesWritten)
+	return nil
+}
+
 // initSMB initializes SMB connection for the vault
-func (v *FileVault) initSMB() {
+func (v *FileVault) initSMB(newDB bool) {
 	LogDebug("initSMB called, SMB enabled: %v", IsSMBEnabled())
 	if !IsSMBEnabled() {
 		LogInfo("SMB sync is disabled")
@@ -134,6 +205,7 @@ func (v *FileVault) initSMB() {
 		v.smb = smb
 		LogInfo("SMB connection initialized successfully")
 	}
+	smb.syncFromSMBCheck(newDB)
 }
 
 // closeSMB closes the SMB connection
