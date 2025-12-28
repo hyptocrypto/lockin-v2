@@ -10,14 +10,6 @@
 
 A lightweight, encrypted credentials manager for the terminal.
 
-## Features
-
-- 🔐 **AES-256-GCM encryption** with PBKDF2 key derivation (100k iterations)
-- 💾 **Local SQLite storage** — your data never leaves your machine
-- 🔄 **Optional SMB sync** — share your vault across devices on your local network, never over the public internet
-- 📋 **Clipboard support** — copy passwords without displaying them
-- ✨ **Beautiful TUI** — built with [Bubble Tea](https://github.com/charmbracelet/bubbletea)
-
 ## Install
 
 ```bash
