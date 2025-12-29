@@ -17,22 +17,12 @@ type Entry struct {
 }
 
 func main() {
-	// ============================================================
-	// MASTER PASSWORD - Set your master password here
-	// ============================================================
 	masterPassword := ""
 
-	// ============================================================
-	// ENTRIES TO IMPORT - Add your entries here
-	// ============================================================
 	entries := []Entry{
 		// Example:
 		// {Name: "github", Username: "user", Password: "pass123"},
 	}
-
-	// ============================================================
-	// DO NOT MODIFY BELOW THIS LINE
-	// ============================================================
 
 	if len(entries) == 0 {
 		fmt.Println("No entries to import. Add entries to the 'entries' slice above.")

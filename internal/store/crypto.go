@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-// Salt for key derivation - must match your existing data
+// Salt for key derivation
 var keySalt = []byte{0x59, 0xa8, 0x42, 0x85, 0x8d, 0x95, 0xe1, 0xb9, 0x0e, 0x19, 0x11, 0x17, 0x03, 0x2e, 0x0a, 0x9d}
 
 // XOR mask for obfuscating the master key in memory

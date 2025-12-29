@@ -47,7 +47,7 @@ func timestamp() string {
 }
 
 // LogInfo logs an info message
-func LogInfo(format string, args ...interface{}) {
+func LogInfo(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	if logger != nil {
 		logger.Printf("[%s] INFO: %s", timestamp(), msg)
@@ -55,7 +55,7 @@ func LogInfo(format string, args ...interface{}) {
 }
 
 // LogError logs an error message
-func LogError(format string, args ...interface{}) {
+func LogError(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	if logger != nil {
 		logger.Printf("[%s] ERROR: %s", timestamp(), msg)
@@ -63,7 +63,7 @@ func LogError(format string, args ...interface{}) {
 }
 
 // LogDebug logs a debug message
-func LogDebug(format string, args ...interface{}) {
+func LogDebug(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	if logger != nil {
 		logger.Printf("[%s] DEBUG: %s", timestamp(), msg)
