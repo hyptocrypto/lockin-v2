@@ -90,6 +90,14 @@ func (s *smbConnection) syncToSMB() error {
 		return nil
 	}
 
+	// Backup existing remote DB before overwriting (if it exists)
+	if src, err := s.share.Open(DBFileName); err == nil {
+		if err := s.backupRemoteDB(src); err != nil {
+			LogError("Failed to backup remote DB: %v", err)
+		}
+		src.Close()
+	}
+
 	localPath := GetDBPath()
 	LogInfo("Syncing database to SMB: %s -> %s", localPath, DBFileName)
 
@@ -114,6 +122,23 @@ func (s *smbConnection) syncToSMB() error {
 	}
 
 	LogInfo("SMB sync complete: %d bytes written", bytesWritten)
+	return nil
+}
+
+// backupRemoteDB creates a backup of the remote DB before overwriting
+func (s *smbConnection) backupRemoteDB(src *smb2.File) error {
+	dst, err := s.share.Create(fmt.Sprintf("%s.backup", DBFileName))
+	if err != nil {
+		return fmt.Errorf("failed to create backup file: %w", err)
+	}
+	defer dst.Close()
+
+	bytesWritten, err := io.Copy(dst, src)
+	if err != nil {
+		return fmt.Errorf("failed to write backup: %w", err)
+	}
+
+	LogInfo("Remote DB backed up: %d bytes", bytesWritten)
 	return nil
 }
 

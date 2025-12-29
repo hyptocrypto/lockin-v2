@@ -58,6 +58,15 @@ func (m Model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "r":
 			// Refresh passwords from vault
 			_ = m.refreshPasswords()
+		case "s":
+			// Force sync to SMB
+			if !m.Vault.IsSyncEnabled() {
+				return m, m.setToast("✗ SMB sync not enabled")
+			}
+			if err := m.Vault.Sync(); err != nil {
+				return m, m.setToast("✗ Sync failed: " + err.Error())
+			}
+			return m, m.setToast("✓ Synced to SMB")
 		case "q":
 			// Lock vault and go back to login
 			m.Vault.Lock()
@@ -257,7 +266,7 @@ func (m Model) viewList() string {
 
 		// Help
 		b.WriteString("\n")
-		b.WriteString(helpStyle.Render("↑/↓ navigate • Enter select • / search • a add • d delete • q lock"))
+		b.WriteString(helpStyle.Render("↑/↓ navigate • Enter select • / search • a add • d delete • s sync • q lock"))
 	}
 
 	// Center the content
