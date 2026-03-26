@@ -1,11 +1,4 @@
-```
-    __               __   ____    
-   / /   ____  _____/ /__/  _/___ 
-  / /   / __ \/ ___/ //_// // __ \
- / /___/ /_/ / /__/ ,< _/ // / / /
-/_____/\____/\___/_/|_/___/_/ /_/ 
-```
-
+<img width="350" src="lockin.png" alt="GUI Image">
 A lightweight, encrypted credentials manager for the terminal.
 
 ## Install
